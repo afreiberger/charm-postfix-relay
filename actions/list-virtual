@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+import commands
+import os
+import sys
+
+#
+# CONST
+#
+
+virtual_file_name = "/etc/postfix/virtual"
+
+#
+# FUNCTIONS
+#
+
+def read_virtual():
+    """
+    Read the content of the current virtual lookup
+    table and return it as array of key/value arrays.
+    The key to delete is filtered.
+    """
+    if not os.path.isfile(virtual_file_name):
+        return []
+    
+    virtual_file = open(virtual_file_name)
+    virtual = []
+    for line in virtual_file:
+        line = line.lstrip()
+        if not line.startswith('#'):
+            data = line.split()
+            virtual.append(data)
+
+    virtual_file.close()
+    return virtual
+
+def set_action_result(virtual):
+    """
+    Set the action result map containing the virtual lookup entries.
+    """
+    if len(virtual) == 0:
+        return
+
+    no = 0
+    for data in virtual:
+        commands.getoutput('action-set virtual.%d.key=%s virtual.%d.value=%s' % (no, data[0], no, data[1]))
+        no += 1
+
+def list_virtual():
+    """
+    List the virtual lookup table to the client.
+    """
+    try:
+        virtual = read_virtual()
+        set_action_result(virtual)
+    except Exception, e:
+        it, iv, itb = sys.exc_info()
+        commands.getoutput('action-fail "cannot list virtual: %s / %s / %s"' % (it, iv, itb))
+
+#
+# MAIN
+#
+
+if __name__ == "__main__":
+    list_virtual()

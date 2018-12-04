@@ -1,0 +1,75 @@
+#!/usr/bin/python
+
+import subprocess
+import sys
+import yaml
+
+from common import start_postfix
+from charmhelpers.core import hookenv
+
+hooks = hookenv.Hooks()
+log = hookenv.log
+
+
+@hooks.hook('config-changed')
+def config_changed():
+    hookenv.status_set('active', 'updating config')
+    config = hookenv.config()
+
+    # create domain rewriting rules
+    filename = '/etc/postfix/smtp_generic_maps.pcre'
+    create_rewrite_map(config["domain_rewrite_map"], filename)
+
+    run_postconf(
+        smtp_generic_maps='pcre:' + filename,
+        **config
+    )
+    config.save()
+    hookenv.status_set('active', 'config updated')
+    start_postfix()
+
+
+def run_postconf(**opts):
+    """Use postconf to adjust postfix configuration values."""
+    args = ["postconf"]
+    pruneconf = [
+        "domain_rewrite_map",
+        "hostname",
+    ]
+    for key, value in opts.iteritems():
+        # don't include our custom config values in postconf
+        if key in pruneconf:
+            continue
+
+        # juju passes booleans in as true python booleans - convert to string
+        # for postconf
+        if type(value) == bool:
+            val = "yes" if value else "no"
+        else:
+            val = value
+
+        args.append(key + "=" + val)
+
+    # FIXME: Check that our command line isn't too long?
+    subprocess.check_output(args)
+
+
+def generate_rewrite(rewrites):
+    """Produce a pcre-compatible rewrite entry for the domains in the supplied
+    rewrite dictionary.  https://tools.ietf.org/html/rfc5322#section-3.2.3
+    allows a much wider range than we do..."""
+    if rewrites is not None:
+        for domain, newdomain in rewrites:
+            yield '/^([a-z0-9-_.]+)@([a-z][a-z0-9-_]+).' + domain + \
+                '$/  $1+$2@' + newdomain + '\n'
+
+
+def create_rewrite_map(rewrite, filename):
+    """Save the rewrite dictionary to the supplied file."""
+    f = open(filename, 'w')
+    f.writelines(generate_rewrite(yaml.load(rewrite)))
+    f.close()
+
+
+if __name__ == "__main__":
+    hooks.execute(sys.argv)

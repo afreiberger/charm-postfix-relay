@@ -1,0 +1,68 @@
+options:
+    disable_vrfy_command:
+        default: yes
+        description:
+            Disable the SMTP VRFY command. This isn't usually useful for relays.
+        type: boolean
+    domain_rewrite_map:
+        default: ''
+        description:
+            A list of domain:newdomain pairs to rewrite.  Primarily used for
+            allowing hosts with locally-resolvable domain names to send mail
+            which appears to be from a real domain.  Addresses in these
+            domains will be rewritten from user@host.domain to
+            user+host@newdomain.
+        type: string
+    myhostname:
+        default: postfix-relay.example.com.
+        description:
+            The external hostname by which this mail relay is known.  This
+            value must be changed for the charm to be useful.
+        type: string
+    mynetworks:
+        default: 127.0.0.0/8
+        description:
+            A comma-separated list of networks for which this relay will allow
+            sending mail.
+        type: string
+    relayhost:
+        default: ''
+        description:
+            An upstream mail relay, sometimes called "smart host".  Enclose it
+            in square brackets to skip MX lookup.
+        type: string
+    smtpd_helo_required:
+        default: yes
+        description:
+            Require that a remote SMTP client sends HELO or EHLO before
+            commencing a MAIL transaction.
+        type: boolean
+    smtpd_recipient_restrictions:
+        default:
+            permit_mynetworks,
+            reject_non_fqdn_recipient,
+            reject_unknown_recipient_domain,
+            reject_unauth_pipelining
+        description:
+            Optional restrictions which the Postfix SMTP server applies in the
+            context of a client RCPT TO command.
+        type: string
+    ssl_ca:
+        description:
+            Base64-encoded SSL CA to use with the certificate and key
+            provided - this is only required if you are providing a privately
+            signed ssl_cert and ssl_key.
+        default:
+        type: string
+    ssl_cert:
+        description:
+            Base64-encoded SSL certificate to install and use for
+            encryption of SMTP traffic.
+        default:
+        type: string
+    ssl_key:
+        description:
+            Base64-encoded SSL key to use with certificate specified as
+            ssl_cert.
+        default:
+        type: string

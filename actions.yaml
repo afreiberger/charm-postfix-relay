@@ -1,0 +1,17 @@
+add-virtual:
+    description: Add an entry to the virtual lookup table
+    params:
+        key:
+            description: The key to be added
+            type: string
+        value:
+            description: The value for the new key
+            type: string
+remove-virtual:
+    description: Remove an entry from the virtual lookup table
+    params:
+        key:
+            description: The key to be removed
+            type: string
+list-virtual:
+    description: List the keys and values of the virtual lookup table

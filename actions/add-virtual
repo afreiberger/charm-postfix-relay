@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+
+import commands
+import os
+import sys
+
+#
+# CONST
+#
+
+virtual_file_name = "/etc/postfix/virtual"
+
+#
+# FUNCTIONS
+#
+
+def read_reverse_virtual():
+    """
+    Read the content of the current virtual lookup 
+    table and return it reversed by value.
+    """
+    if not os.path.isfile(virtual_file_name):
+        return {}
+
+    virtual_file = open(virtual_file_name)
+    virtual = {}
+    for line in open(virtual_file_name):
+        line = line.lstrip()
+        if not line.startswith('#'):
+            data = line.split()
+            key = data[0]
+            value = data[1]
+            keys = virtual[value] if value in virtual else {}
+            keys[key] = True
+            virtual[value] = keys
+
+    virtual_file.close()
+    return virtual
+
+def write_reverse_virtual(virtual):
+    """
+    Write the changed virtual lookup table.
+    """
+    virtual_file = open(virtual_file_name, 'w+')
+    values = virtual.keys()
+    values.sort()
+    for value in values:
+        keys = virtual[value].keys()
+        keys.sort()
+        for key in keys:
+            virtual_file.write("%s\t%s\n" % (key, value))
+
+    virtual_file.close()
+
+def update_postmap():
+	"""
+	Run postmap to update the virtual database.
+	"""
+	commands.getoutput('postmap %s' % virtual_file_name)
+
+def add_virtual(key, value):
+    """
+    Adding a key/value pair to virtual lookup table.
+    """
+    try:
+        virtual = read_reverse_virtual()
+        keys = virtual[value] if value in virtual else {}
+        keys[key] = True
+        virtual[value] = keys
+        write_reverse_virtual(virtual)
+        update_postmap()
+    except Exception, e:
+        it, iv, itb = sys.exc_info()
+        commands.getoutput('action-fail "cannot add key [%s] with value [%s] to virtual: %s / %s / %s"' % (key, value, it, iv, itb))
+
+#
+# MAIN
+#
+
+if __name__ == "__main__":
+    key = commands.getoutput("action-get key")
+    value = commands.getoutput("action-get value")
+    add_virtual(key, value)

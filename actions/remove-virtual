@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+import commands
+import os
+import sys
+
+#
+# CONST
+#
+
+virtual_file_name = "/etc/postfix/virtual"
+
+#
+# FUNCTIONS
+#
+
+def read_filtered_virtual(key):
+    """
+    Read the content of the current virtual lookup
+    table and return it as array of key/value arrays.
+    The key to delete is filtered.
+    """
+    if not os.path.isfile(virtual_file_name):
+        return []
+
+    virtual_file = open(virtual_file_name)
+    virtual = []
+    for line in virtual_file:
+        line = line.lstrip()
+        if not line.startswith('#'):
+            data = line.split()
+            if not data[0] == key:
+                virtual.append(data)
+
+    virtual_file.close()
+    return virtual
+
+def write_virtual(virtual):
+    """
+    Write the changed virtual lookup table.
+    """
+    virtual_file = open(virtual_file_name, 'w+')
+    for data in virtual:
+        virtual_file.write("%s\t%s\n" % (data[0], data[1]))
+
+    virtual_file.close()
+
+def update_postmap():
+	"""
+	Run postmap to update the virtual database.
+	"""
+	commands.getoutput('postmap %s' % virtual_file_name)
+
+def remove_virtual(key):
+    """
+    Removing a key from virtual lookup table.
+    """
+    try:
+        virtual = read_filtered_virtual(key)
+        write_virtual(virtual)
+        update_postmap()
+    except Exception, e:
+        it, iv, itb = sys.exc_info()
+        commands.getoutput('action-fail "cannot remove key [%s] from virtual: %s / %s / %s"' % (key, it, iv, itb))
+
+#
+# MAIN
+#
+
+if __name__ == "__main__":
+    key = commands.getoutput("action-get key")
+    remove_virtual(key)
