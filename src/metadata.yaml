@@ -7,7 +7,15 @@ description: |
   This charm implements a mail relay for cloud instances.
 tags:
   - network
-subordinate: false
+series:
+  - trusty
+  - xenial
+  - bionic
+subordinate: true
 provides:
-    postfix:
-        interface: mta
+  postfix:
+    interface: mta
+requires:
+  container:
+    interface: juju-info
+    scope: container

@@ -49,20 +49,8 @@ options:
         type: string
     ssl_ca:
         description:
-            Base64-encoded SSL CA to use with the certificate and key
-            provided - this is only required if you are providing a privately
-            signed ssl_cert and ssl_key.
-        default:
-        type: string
-    ssl_cert:
-        description:
-            Base64-encoded SSL certificate to install and use for
-            encryption of SMTP traffic.
-        default:
-        type: string
-    ssl_key:
-        description:
-            Base64-encoded SSL key to use with certificate specified as
-            ssl_cert.
+            Base64-encoded SSL CA to use with the upstream relay host. If set
+            postfix will assume the upstream host is using TLS and configure
+            itself accordingly.
         default:
         type: string

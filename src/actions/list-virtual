@@ -22,7 +22,7 @@ def read_virtual():
     """
     if not os.path.isfile(virtual_file_name):
         return []
-    
+
     virtual_file = open(virtual_file_name)
     virtual = []
     for line in virtual_file:
