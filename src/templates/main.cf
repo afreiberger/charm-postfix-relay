@@ -11,10 +11,10 @@ append_dot_mydomain = no
 
 readme_directory = no
 
-### TLS parameters ###
 {%- if enable_ssl %}
+### TLS parameters ###
 smtp_use_tls=yes
-{% endif -%}
+{%- endif %}
 
 disable_vrfy_command = {{ config.disable_vrfy_command }}
 domain_rewrite_map = {{ config.domain_rewrite_map }}

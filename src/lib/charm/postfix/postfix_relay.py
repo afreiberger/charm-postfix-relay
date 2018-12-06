@@ -21,8 +21,7 @@ from charmhelpers.core.host import (
     service_restart,
     write_file,
 )
-
-from charm.postfix.postfix_relay_context import PostfixContext
+from charmhelpers.core.hookenv import config
 
 
 TEMPLATES = 'templates/'
@@ -35,12 +34,12 @@ def write_configs():
     with open(template_path) as t:
         template = Template(t.read())
     with open(MAIN_CFG, 'w+') as f:
-        f.write(template.render())
+        f.write(template.render(PostfixContext()()))
 
 
 def restart_postfix():
     service_restart('postfix')
-    
+
 
 def setup_ssl():
     ca = config('ssl_ca')

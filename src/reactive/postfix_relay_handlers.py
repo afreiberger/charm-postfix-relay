@@ -18,7 +18,7 @@ from charm.postfix.postfix_relay import (
     setup_ssl,
     write_configs,
 )
-from charmhelpers.hookenv import config
+from charmhelpers.core.hookenv import config
 
 
 @reactive.hook('config-changed')
