@@ -13,7 +13,7 @@ readme_directory = no
 
 {%- if enable_ssl %}
 ### TLS parameters ###
-smtp_use_tls=yes
+smtp_use_tls = yes
 {%- endif %}
 
 disable_vrfy_command = {{ config.disable_vrfy_command }}
@@ -23,7 +23,7 @@ mynetworks = {{ config.mynetworks }}
 mydestination = $myhostname, localhost.$mydomain, localhost
 relayhost = {{ config.relayhost }}
 smtpd_helo_required = {{ config.smtpd_helo_required }}
-smtpd_recipient_restrictions {{ config.smtpd_recipient_restrictions }}
+smtpd_recipient_restrictions = {{ config.smtpd_recipient_restrictions }}
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
 smtp_generic_maps = pcre:/etc/postfix/smtp_generic_maps.pcre
 
