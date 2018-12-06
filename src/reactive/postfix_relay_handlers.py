@@ -18,14 +18,17 @@ from charm.postfix.postfix_relay import (
     setup_ssl,
     write_configs,
 )
-from charmhelpers.core.hookenv import config
+from charmhelpers.core.hookenv import (
+    config,
+    status_set,
+)
 
 
 @reactive.hook('config-changed')
 def config_changed():
-    reactive.set_state('maintenance', 'Updating Postfix configuration')
+    status_set('maintenance', 'Updating Postfix configuration')
     if config('ssl_ca'):
         setup_ssl()
     write_configs()
     restart_postfix()
-    reactive.set_state('active', 'Unit is ready.')
+    status_set('active', 'Unit is ready.')
