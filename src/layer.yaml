@@ -1,0 +1,8 @@
+includes:
+  - layer:basic
+repo: https://github.com/mskalka/charm-postfix-relay
+options:
+  basic:
+    use_venv: true
+    packages:
+      - 'postfix'

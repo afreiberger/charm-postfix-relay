@@ -16,7 +16,7 @@ virtual_file_name = "/etc/postfix/virtual"
 
 def read_reverse_virtual():
     """
-    Read the content of the current virtual lookup 
+    Read the content of the current virtual lookup
     table and return it reversed by value.
     """
     if not os.path.isfile(virtual_file_name):
