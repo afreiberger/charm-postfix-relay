@@ -6,3 +6,4 @@ options:
     use_venv: true
     packages:
       - 'postfix'
+      - 'postfix-pcre'
