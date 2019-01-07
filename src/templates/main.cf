@@ -23,7 +23,9 @@ smtp_sasl_security_options =
 {%- endif %}
 
 disable_vrfy_command = {{ config.disable_vrfy_command }}
+{%- if config.domain_rewrite_map %}
 domain_rewrite_map = {{ config.domain_rewrite_map }}
+{%- endif %}
 myhostname = {{ config.myhostname }}
 mynetworks = {{ config.mynetworks }}
 mydestination = $myhostname, localhost.$mydomain, localhost
