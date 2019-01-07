@@ -1,0 +1,1 @@
+{{ config.relayhost }}    {{ config.smtp_auth_username }}:{{ config.smtp_auth_password }}

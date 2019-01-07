@@ -15,6 +15,7 @@ from base64 import b64decode
 from collections import OrderedDict
 from jinja2 import Template
 import os
+import subprocess
 
 from charmhelpers.core.host import (
     install_ca_cert,
@@ -26,15 +27,27 @@ from charmhelpers.core.hookenv import config
 
 TEMPLATES = 'templates/'
 MAIN_CFG = '/etc/postfix/main.cf'
+AUTH_CONFIG = '/etc/postfix/sasl_passwd'
 POSTFIX_CERTIFICATE_DIR = '/etc/postfix/'
 
 
 def write_configs():
-    template_path = os.path.join(TEMPLATES, 'main.cf')
-    with open(template_path) as t:
-        template = Template(t.read())
+    cfg_template_path = os.path.join(TEMPLATES, 'main.cf')
+    with open(cfg_template_path) as t:
+        cfg_template = Template(t.read())
     with open(MAIN_CFG, 'w+') as f:
-        f.write(template.render(PostfixContext()()))
+        f.write(cfg_template.render(PostfixContext()()))
+    if config('smtpd_username') and config('smtpd_password'):
+        write_auth_file()
+
+def write_auth_file():
+    auth_template_path = os.path.join(TEMPLATES, 'sasl_passwd')
+    with open(auth_template_path) as t:
+        auth_template = Template(t.read())
+    with open(AUTH_CONFIG, 'w+') as f:
+        f.write(auth_template.render(PostfixContext()()))
+    os.chmod(AUTH_CONFIG, 0o600)
+    subprocess.check_call(['postmap', 'hash:{}'.format(AUTH_CONFIG)])
 
 
 def restart_postfix():
@@ -53,4 +66,6 @@ class PostfixContext():
         ctxt['config'] = config()
         if config('ssl_ca'):
             ctxt['enable_ssl'] = True
+        if config('smtpd_username') and config('smtpd_password'):
+            ctxt['enable_auth'] = True
         return ctxt

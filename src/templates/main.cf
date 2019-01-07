@@ -16,6 +16,12 @@ readme_directory = no
 smtp_use_tls = yes
 {%- endif %}
 
+{%- if enable_auth %}
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options =
+{%- endif %}
+
 disable_vrfy_command = {{ config.disable_vrfy_command }}
 domain_rewrite_map = {{ config.domain_rewrite_map }}
 myhostname = {{ config.myhostname }}
