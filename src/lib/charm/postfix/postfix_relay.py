@@ -37,7 +37,7 @@ def write_configs():
         cfg_template = Template(t.read())
     with open(MAIN_CFG, 'w+') as f:
         f.write(cfg_template.render(PostfixContext()()))
-    if config('smtpd_username') and config('smtpd_password'):
+    if config('smtp_auth_username') and config('smtp_auth_password'):
         write_auth_file()
 
 def write_auth_file():
@@ -66,6 +66,6 @@ class PostfixContext():
         ctxt['config'] = config()
         if config('ssl_ca'):
             ctxt['enable_ssl'] = True
-        if config('smtpd_username') and config('smtpd_password'):
+        if config('smtp_auth_username') and config('smtp_auth_password'):
             ctxt['enable_auth'] = True
         return ctxt
