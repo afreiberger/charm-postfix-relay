@@ -54,3 +54,15 @@ options:
             itself accordingly.
         default:
         type: string
+    smtp_auth_username:
+        description:
+            Username to auth against remote mail server. Requires
+            smtp_auth_password to take effect.
+        type: string
+        default:
+    smtp_auth_password:
+        description:
+            Password to auth against remote mail server using
+            smtp_auth_username. Requires smtp_auth_username to take effect.
+        type: string
+        default:
