@@ -22,18 +22,18 @@ smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
 smtp_sasl_security_options =
 {%- endif %}
 
-disable_vrfy_command = {{ config.disable_vrfy_command }}
-{%- if config.domain_rewrite_map %}
-domain_rewrite_map = {{ config.domain_rewrite_map }}
-{%- endif %}
+disable_vrfy_command = {{ disable_vrfy_command }}
 myhostname = {{ config.myhostname }}
 mynetworks = {{ config.mynetworks }}
 mydestination = $myhostname, localhost.$mydomain, localhost
 relayhost = {{ config.relayhost }}
-smtpd_helo_required = {{ config.smtpd_helo_required }}
+smtpd_helo_required = {{ smtpd_helo_required }}
 smtpd_recipient_restrictions = {{ config.smtpd_recipient_restrictions }}
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+{%- if have_rewrite_maps %}
+# domain_rewrite_map = {{ config.domain_rewrite_map }}
 smtp_generic_maps = pcre:/etc/postfix/smtp_generic_maps.pcre
+{%- endif %}
 
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
